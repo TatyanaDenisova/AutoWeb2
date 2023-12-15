@@ -1,52 +1,57 @@
-import yaml
-from module import Site
+from testpage import OperationsHelper
+import logging 
+import yaml, time
 
-with open("testdata.yaml") as f:
+with open("./testdata.yaml") as f:
     testdata = yaml.safe_load(f)
 
+def test_step1(browser):
+    logging.info("Test1 Starting")
+    testpage = OperationsHelper(browser, testdata["address"])
+    testpage.go_to_site()
+    testpage.enter_login("test")
+    testpage.enter_pass("test")
+    testpage.click_login_button()
+    assert testpage.get_error_text() == "401"
+
+def test_step2(browser):
+    logging.info("Test1 Starting")
+    testpage = OperationsHelper(browser, testdata["address"])
+    testpage.go_to_site()
+    testpage.enter_login(testdata["login"])
+    testpage.enter_pass(testdata["password"])
+    testpage.click_login_button()
+    assert testpage.get_text_blog() == "Blog"
 
 
+def test_step3(browser):
+    logging.info("Test1 Starting")
+    testpage = OperationsHelper(browser, testdata["address"])
+    testpage.go_to_site()
+    testpage.enter_login(testdata["login"])
+    testpage.enter_pass(testdata["password"])
+    testpage.click_login_button()
+    testpage.click_button_create()
+    testpage.enter_title_post("super new title")
+    testpage.enter_content_post("text new text")
+    testpage.click_post_button()
 
-def test_step1(site, log_xpath, pass_xpath, btn_xpath, result_xpath):
-    input1 = site.find_element("xpath", log_xpath)
-    input1.send_keys("test")
-    input2 = site.find_element("xpath", pass_xpath)
-    input2.send_keys("test")
-    btn = site.find_element("xpath", btn_xpath)
-    btn.click()
-    err_lable = site.find_element("xpath", result_xpath)
-    assert err_lable.text == "401"
+    time.sleep(3)
+    assert testpage.get_post() == "super new title"
 
-def test_step2(site, log_xpath, pass_xpath, btn_xpath, result_login):
-    input1 = site.find_element("xpath", log_xpath)
-    input1.send_keys(testdata["login"])
-    input2 = site.find_element("xpath", pass_xpath)
-    input2.send_keys(testdata["password"])
-    btn = site.find_element("xpath", btn_xpath)
-    btn.click()
-    blog = site.find_element("xpath", result_login)
-    assert blog.text == "Blog"
+def test_step4(browser):
+    logging.info("Test1 Starting")
+    testpage = OperationsHelper(browser, testdata["address"])
+    testpage.go_to_site()
+    testpage.enter_login(testdata["login"])
+    testpage.enter_pass(testdata["password"])
+    testpage.click_login_button()
+    testpage.click_contact()
+    testpage.enter_your_name("Sveta")
+    testpage.enter_your_email("sun@mail.com")
+    testpage.enter_your_content("hello")
+    testpage.click_contact_us_btn()
+    time.sleep(3)
+    assert testpage.get_alert_text() == "Form successfully submitted"
 
-
-def test_step3(site, log_xpath, pass_xpath, btn_xpath, btn_create, title, description, content, date, post_btn, post_result):
-    input1 = site.find_element("xpath", log_xpath)
-    input1.send_keys(testdata["login"])
-    input2 = site.find_element("xpath", pass_xpath)
-    input2.send_keys(testdata["password"])
-    btn = site.find_element("xpath", btn_xpath)
-    btn.click()
-    create = site.find_element("xpath", btn_create)
-    create.click()
-    input3 = site.find_element("xpath", title)
-    input3.send_keys(testdata["title"])
-    input4 = site.find_element("xpath", description)
-    input4.send_keys(testdata["description"])
-    input5 = site.find_element("xpath", content)
-    input5.send_keys(testdata["content"])
-    input6 = site.find_element("xpath", date)
-    input6.send_keys(testdata["date"])
-    btn2 = site.find_element("xpath", post_btn)
-    btn2.click()
-    post = site.find_element("xpath", post_result)
-    assert post.text == "text new text"
 
